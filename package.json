@@ -1,15 +1,23 @@
 {
-  "name": "plusdebad_backend",
+  "name": "mybizzz_backend",
   "version": "1.0.0",
-  "description": "back-end for +2Bad",
+  "description": "back-end for MyBizzz",
   "main": "app.js",
   "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.28.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.1"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "joi": "^17.5.0",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15"
   },
   "scripts": {
     "start": "nodemon app.js"
