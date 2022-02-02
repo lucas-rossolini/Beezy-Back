@@ -1,0 +1,17 @@
+{
+  "name": "plusdebad_backend",
+  "version": "1.0.0",
+  "description": "back-end for +2Bad",
+  "main": "app.js",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "joi": "^17.5.0",
+    "mysql2": "^2.3.3"
+  },
+  "scripts": {
+    "start": "nodemon app.js"
+  }
+}
