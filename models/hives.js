@@ -12,7 +12,8 @@ const checkHivesFields = (data, create = false) => {
 };
 
 const findMany = (query) => {
-  let sqlQuery = 'SELECT * FROM ruches';
+  let sqlQuery =
+    'SELECT * FROM ruches INNER JOIN observations ON ruches.id = observations.ruche_id WHERE observations.date = (SELECT MAX(observations.date) from observations WHERE observations.ruche_id = ruches.id )';
   const sqlValue = [];
   let transitionWord = ' WHERE';
 
@@ -28,6 +29,14 @@ const findMany = (query) => {
 const findOne = (hiveId) => {
   return db
     .query('SELECT * FROM ruches WHERE id = ?', [hiveId])
+    .then((result) => result[0]);
+};
+
+const findLastObserv = () => {
+  return db
+    .query(
+      'SELECT * FROM ruches INNER JOIN observations ON ruches.id = observations.ruche_id WHERE observations.date = (SELECT MAX(observations.date) from observations WHERE observations.ruche_id = ruches.id )'
+    )
     .then((result) => result[0]);
 };
 
@@ -52,6 +61,7 @@ const deleteOne = (hiveId) => {
 module.exports = {
   findOne,
   findMany,
+  findLastObserv,
   createOne,
   updateOne,
   deleteOne,

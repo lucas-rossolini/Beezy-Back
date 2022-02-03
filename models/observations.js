@@ -1,32 +1,26 @@
-const Joi = require('joi');
+const Joi = require('joi').extend(require('@joi/date'));
 const connexion = require('../db-config');
 
 const db = connexion.promise();
 
-const checkObservationsFields = (data, create = false) => {
+const checkObservationFields = (data, create = false) => {
   const presence = create ? 'required' : 'optional';
   return Joi.object({
-    id: Joi.number().presence('optional'),
-    date: Joi.date().presence(presence),
-    couvain: Joi.boolean().presence(presence),
-    miel: Joi.boolean().presence(presence),
+    date: Joi.string().max(255).presence(presence),
+    couvain: Joi.number().presence(presence),
+    miel: Joi.number().presence(presence),
     status: Joi.string().max(100).presence(presence),
     ruche_id: Joi.number().integer().min(1).presence(presence),
   }).validate(data, { abortEarly: false }).error;
 };
 
-const findMany = (query) => {
-  let sqlQuery = 'SELECT * FROM observations';
-  const sqlValue = [];
-  let transitionWord = ' WHERE';
-
-  if (query.ruche_id) {
-    sqlQuery += `${transitionWord} name = ?`;
-    sqlValue.push(query.ruche_id);
-    transitionWord = 'AND';
-  }
-
-  return db.query(sqlQuery, sqlValue).then((result) => result[0]);
+const findMany = (rucheId) => {
+  return db
+    .query(
+      'SELECT * FROM observations WHERE ruche_id = ? ORDER BY observations.date DESC',
+      [rucheId]
+    )
+    .then((result) => result[0]);
 };
 
 const findOne = (observationId) => {
@@ -59,11 +53,18 @@ const deleteOne = (observationId) => {
     .then((result) => result[0]);
 };
 
+const deleteAll = (rucheId) => {
+  return db
+    .query('DELETE FROM observations WHERE ruche_id = ?', [rucheId])
+    .then((result) => result[0]);
+};
+
 module.exports = {
   findOne,
   findMany,
   createOne,
   updateOne,
   deleteOne,
-  checkObservationsFields,
+  deleteAll,
+  checkObservationFields,
 };

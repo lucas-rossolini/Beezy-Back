@@ -1,8 +1,8 @@
 const observationsRouter = require('express').Router();
 const Observations = require('../models/observations');
 
-observationsRouter.get('/', (req, res) => {
-  Observations.findMany(req.query)
+observationsRouter.get('/:rucheId', (req, res) => {
+  Observations.findMany(req.params.rucheId)
     .then((observation) => {
       if (observation) {
         res.status(200).json(observation);
@@ -20,7 +20,7 @@ observationsRouter.get('/', (req, res) => {
     });
 });
 
-observationsRouter.get('/:id', (req, res) => {
+observationsRouter.get('/one/:id', (req, res) => {
   Observations.findOne(req.params.id)
     .then((observation) => {
       if (observation) {
@@ -39,13 +39,17 @@ observationsRouter.get('/:id', (req, res) => {
     });
 });
 
-observationsRouter.post('/', (req, res) => {
-  const error = Observations.checkMoviesFields(req.body, true);
-  if (error) {
-    res.status(401).send({ msg: 'Champs incorrects', error });
-  } else {
+observationsRouter.post(
+  '/',
+  (req, res) => {
+    // const error = Observations.checkObservationFields(req.body, true);
+    // if (error) {
+    //   console.log(error);
+    //   res.status(401).send({ msg: 'Champs incorrects', error });
+    // } else {
     Observations.createOne(req.body)
       .then((result) => {
+        console.log(result);
         res.send({ succes: 'Ruche enregistrée avec succès !', data: result });
       })
       .catch((err) => {
@@ -55,10 +59,11 @@ observationsRouter.post('/', (req, res) => {
         );
       });
   }
-});
+  // }
+);
 
 observationsRouter.put('/:id', (req, res) => {
-  const error = Observations.checkMoviesFields(req.body, true);
+  const error = Observations.checkObservationFields(req.body, true);
   if (error) {
     res.status(401).send({ msg: 'Champs incorrects', error });
   } else {
@@ -76,6 +81,19 @@ observationsRouter.put('/:id', (req, res) => {
 });
 
 observationsRouter.delete('/:id', (req, res) => {
+  Observations.deleteOne(req.params.id)
+    .then((result) => {
+      res.send({ success: 'Ruche supprimée avec succès !', data: result });
+    })
+    .catch((err) => {
+      console.error(err);
+      res.send(
+        'Une erreur est survenue lors de la suppression de l`&apos`observation'
+      );
+    });
+});
+
+observationsRouter.delete('/:rucheId', (req, res) => {
   Observations.deleteOne(req.params.id)
     .then((result) => {
       res.send({ success: 'Ruche supprimée avec succès !', data: result });

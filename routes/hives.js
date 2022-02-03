@@ -1,5 +1,7 @@
+const moment = require('moment');
 const hivesRouter = require('express').Router();
 const Hives = require('../models/hives');
+const Observations = require('../models/observations');
 
 hivesRouter.get('/', (req, res) => {
   Hives.findMany(req.query)
@@ -39,13 +41,39 @@ hivesRouter.get('/:id', (req, res) => {
     });
 });
 
+hivesRouter.get('/lastObserv', (req, res) => {
+  Hives.findLastObserv(req.params.id)
+    .then((hive) => {
+      if (hive) {
+        res.status(200).json(hive);
+      } else {
+        res.status(404).send('Aucune observation trouvée pour cette ruche');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res
+        .status(500)
+        .send(
+          'Une erreur est survenue pour récupérer la dernière observation de cette ruche depuis le serveur'
+        );
+    });
+});
+
 hivesRouter.post('/', (req, res) => {
-  const error = Hives.checkMoviesFields(req.body, true);
+  const error = Hives.checkHivesFields(req.body, true);
   if (error) {
     res.status(401).send({ msg: 'Champs incorrects', error });
   } else {
     Hives.createOne(req.body)
       .then((result) => {
+        Observations.createOne({
+          date: moment().format('YYYY-MM-DD HH:mm:ss').toString(36),
+          couvain: false,
+          miel: false,
+          status: 'PAS OBERVE',
+          ruche_id: result.insertId,
+        });
         res.send({ succes: 'Ruche enregistrée avec succès !', data: result });
       })
       .catch((err) => {
@@ -74,8 +102,9 @@ hivesRouter.put('/:id', (req, res) => {
 });
 
 hivesRouter.delete('/:id', (req, res) => {
-  Hives.deleteOne(req.params.id)
+  Observations.deleteAll(req.params.id)
     .then((result) => {
+      Hives.deleteOne(req.params.id);
       res.send({ success: 'Ruche supprimée avec succès !', data: result });
     })
     .catch((err) => {
