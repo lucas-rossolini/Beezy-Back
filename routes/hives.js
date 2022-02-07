@@ -68,7 +68,7 @@ hivesRouter.post('/', (req, res) => {
     Hives.createOne(req.body)
       .then((result) => {
         Observations.createOne({
-          date: moment().format('YYYY-MM-DD HH:mm:ss').toString(36),
+          date: moment().format('YYYY-MM-DD hh:mm:ss').toString(36),
           couvain: false,
           miel: false,
           status: 'PAS OBERVE',
