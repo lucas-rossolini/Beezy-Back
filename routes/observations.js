@@ -1,5 +1,5 @@
 const observationsRouter = require('express').Router();
-const Observations = require('../models/observations');
+const Observations = require('../models/old_observations');
 
 observationsRouter.get('/:rucheId', (req, res) => {
   Observations.findMany(req.params.rucheId)
