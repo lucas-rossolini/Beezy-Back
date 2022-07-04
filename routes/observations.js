@@ -49,7 +49,6 @@ observationsRouter.post(
     // } else {
     Observations.createOne(req.body)
       .then((result) => {
-        console.log(result);
         res.send({ succes: 'Ruche enregistrée avec succès !', data: result });
       })
       .catch((err) => {

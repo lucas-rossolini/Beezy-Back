@@ -27,9 +27,10 @@ authRouter.post('/', (req, res) => {
       ['password', '=', getSHA256(req.body.password)],
     ])
     .then((auth) => {
-      console.log(auth);
       if (auth.length === 1) {
-        res.status(200).json(auth);
+        auth[0].token = Math.random().toString(36) + Math.random().toString(36);
+        userModel.updateOne(auth[0].id, auth[0]);
+        res.status(200).json(auth[0].token);
       } else {
         res.status(401).send('Accès refusé');
       }
@@ -54,8 +55,8 @@ authRouter.post('/create-user', (req, res) => {
   }
 });
 
-// authRouter.get('/session', (req, res) => {
-
-// });
+authRouter.post('/logout', (req, res) => {
+  Response(() => userModel.updateOne(req.currentUser.id, { token: '' }), res);
+});
 
 module.exports = authRouter;
