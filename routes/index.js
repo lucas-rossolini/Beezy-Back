@@ -1,27 +1,10 @@
-/* eslint-disable no-undef */
 const AuthRouter = require('./auth');
 const HivesRouter = require('./hives');
 const VisitsRouter = require('./visits');
-const LogoutRouter = require('./logout');
 
 const userModel = require('../models/user');
 
-// function parseCookies(request) {
-//   const list = {};
-//   const cookieHeader = request.headers?.cookie;
-//   if (!cookieHeader) return list;
-//   cookieHeader.split(`;`).forEach(function (cookie) {
-//     let [name, ...rest] = cookie.split(`=`);
-//     name = name?.trim();
-//     if (!name) return;
-//     const value = rest.join(`=`).trim();
-//     if (!value) return;
-//     list[name] = decodeURIComponent(value);
-//   });
-
-//   return list;
-// }
-
+// Define auth routes and use middleware to load current user
 const setupApp = (app) => {
   app.use(
     '/auth',
@@ -35,6 +18,8 @@ const setupApp = (app) => {
     },
     AuthRouter
   );
+
+  // Define hives routes and use middleware to load current user
   app.use(
     '/hives',
     async (req, res, next) => {
@@ -47,6 +32,8 @@ const setupApp = (app) => {
     },
     HivesRouter
   );
+
+  // Define visits routes and use middleware to load current user
   app.use(
     '/visits',
     async (req, res, next) => {
@@ -59,7 +46,6 @@ const setupApp = (app) => {
     },
     VisitsRouter
   );
-  app.use('/logout', LogoutRouter);
 };
 
 module.exports = {

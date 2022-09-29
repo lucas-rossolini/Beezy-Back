@@ -1,10 +1,10 @@
-/* eslint-disable no-undef */
 const model = require('./model');
 const userHiveModel = require('./userHives');
 const visitModel = require('./visit');
 
 const fieldsFormat = { bool: ['swarming_risk'] };
 
+// construct model instance with hive table informations
 const modelInstance = model(
   'hive',
   [
@@ -30,6 +30,7 @@ const modelInstance = model(
   }
 );
 
+// specific query to get all hives annd their visits for one user
 const getAllForUser = (user_id) => {
   let sqlQuery =
     'SELECT hive.*, visit.date as last_visit_date ' +
@@ -41,6 +42,7 @@ const getAllForUser = (user_id) => {
   return modelInstance.query(sqlQuery).then((result) => result[0]);
 };
 
+// specific query to get count of hives by state
 const getAllForUserByState = (user_id) => {
   let sqlQuery =
     'SELECT COUNT(hive.id) as hive_count, state ' +
@@ -53,6 +55,7 @@ const getAllForUserByState = (user_id) => {
   return modelInstance.query(sqlQuery).then((result) => result[0]);
 };
 
+// specific query to get count of hives with a swarming risk
 const getAllForUserBySwarm = (user_id) => {
   let sqlQuery =
     'SELECT COUNT(hive.id) as swarm_count ' +
@@ -64,6 +67,7 @@ const getAllForUserBySwarm = (user_id) => {
   return modelInstance.query(sqlQuery).then((result) => result[0]);
 };
 
+// specific quesry to get one hive with all its visits and linked actions
 const findOneWithVisits = (hive_id) => {
   let sqlQuery =
     'SELECT hive.*, visit.id as visit_id, visit.comment as visit_comment, visit.date as visit_date, action.label as action_label, visit_actions.comment as action_comment, visit_actions.id as visit_action_id ' +
@@ -73,7 +77,9 @@ const findOneWithVisits = (hive_id) => {
     'LEFT JOIN action ON visit_actions.action_id = action.id ' +
     'WHERE hive.id = ' +
     hive_id;
+
   return modelInstance.query(sqlQuery).then((result) => {
+    // formatting result object
     let formatedHive = {};
     const resultHive = result[0];
 
@@ -87,6 +93,7 @@ const findOneWithVisits = (hive_id) => {
     formatedHive.behaviour = resultHive[0].behaviour;
     formatedHive.visits = {};
 
+    // looping throught actions
     resultHive.forEach((e) => {
       if (formatedHive.visits[e.visit_id] === undefined) {
         formatedHive.visits[e.visit_id] = {};

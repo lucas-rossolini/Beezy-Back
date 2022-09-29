@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const moment = require('moment');
 const Joi = require('joi');
 const visitsRouter = require('express').Router();
@@ -6,6 +5,7 @@ const visitModel = require('../models/visit');
 const actionModel = require('../models/action');
 const Response = require('../Services/Response');
 
+// check input fields for visit with JOI validator
 const checkVisitsFields = (data, create = false) => {
   const presence = create ? 'required' : 'optional';
   return Joi.object({
@@ -18,21 +18,25 @@ const checkVisitsFields = (data, create = false) => {
   }).validate(data, { abortEarly: false }).error;
 };
 
+// all visits for current user route
 visitsRouter.get('/', (req, res) => {
   Response(() => visitModel.getAllByUser(req.currentUser.id), res);
 });
 
+// get all actions route
 visitsRouter.get('/actions', (req, res) => {
   Response(() => actionModel.findMany(), res);
 });
 
+// get single visit route
 visitsRouter.get('/:id', (req, res) => {
   Response(() => visitModel.findOne(req.params.id), res);
 });
 
+// add a nnew visit route
 visitsRouter.post('/', (req, res) => {
+  // @TODO : handle actions input in JOI
   // const error = checkVisitsFields(req.body, true);
-  console.log(req.body);
   const error = false;
   if (error) {
     res.status(401).send({ msg: 'Champs incorrects', error });
@@ -43,6 +47,7 @@ visitsRouter.post('/', (req, res) => {
   }
 });
 
+// update visit route
 visitsRouter.put('/:id', (req, res) => {
   const error = checkVisitsFields(req.body, true);
   if (error) {
@@ -52,6 +57,7 @@ visitsRouter.put('/:id', (req, res) => {
   }
 });
 
+// delete visit route
 visitsRouter.delete('/:id', (req, res) => {
   Response(() => visitModel.deleteOne(req.params.id), res);
 });

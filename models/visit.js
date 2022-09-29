@@ -9,6 +9,7 @@ const modelInstance = model(
   ['date', 'comment', 'user_id', 'hive_id'],
   fieldsFormat,
   {
+    // hook to create visit_actions after a new visit
     afterCreate: (createdData, insertedValues) => {
       for (const [actionId, actionComment] of Object.entries(
         insertedValues.actions
@@ -20,6 +21,7 @@ const modelInstance = model(
         });
       }
     },
+    // hook to delete visit_actions after deleting visit
     afterDelete: (idsToDelete) => {
       if (!Number.isInteger(idsToDelete[0])) {
         idsToDelete = idsToDelete.map((e) => e.id);
@@ -31,6 +33,7 @@ const modelInstance = model(
   }
 );
 
+//get all visits actions for a user
 const getAllByUser = (user_id) => {
   let sqlQuery =
     'SELECT visit.*, visit_actions.id as va_id, action.label, hive.label as hive_label ' +
