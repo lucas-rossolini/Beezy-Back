@@ -5,4 +5,5 @@ module.exports = model('user', [
   'last_name',
   'email',
   'password',
+  'token',
 ]);

@@ -1,37 +1,51 @@
 const AuthRouter = require('./auth');
 const HivesRouter = require('./hives');
-const LogoutRouter = require('./logout');
+const VisitsRouter = require('./visits');
 
 const userModel = require('../models/user');
 
-function parseCookies(request) {
-  const list = {};
-  const cookieHeader = request.headers?.cookie;
-  if (!cookieHeader) return list;
-  cookieHeader.split(`;`).forEach(function (cookie) {
-    let [name, ...rest] = cookie.split(`=`);
-    name = name?.trim();
-    if (!name) return;
-    const value = rest.join(`=`).trim();
-    if (!value) return;
-    list[name] = decodeURIComponent(value);
-  });
+// Define auth routes and use middleware to load current user
+const setupApp = (app) => {
+  app.use(
+    '/auth',
+    async (req, res, next) => {
+      await userModel
+        .find([['token', '=', req.headers.authorization]])
+        .then((result) => {
+          req.currentUser = result[0];
+        });
+      next();
+    },
+    AuthRouter
+  );
 
-  return list;
-}
+  // Define hives routes and use middleware to load current user
+  app.use(
+    '/hives',
+    async (req, res, next) => {
+      await userModel
+        .find([['token', '=', req.headers.authorization]])
+        .then((result) => {
+          req.currentUser = result[0];
+        });
+      next();
+    },
+    HivesRouter
+  );
 
-const setupApp = async (app) => {
-  await app.use(async (req, res, next) => {
-    app.request.cookies = parseCookies(app.request);
-    await userModel
-      .find([['email', '=', req.headers.authorization]])
-      .then((result) => (global.currentUser = result[0]));
-
-    next();
-  });
-  app.use('/auth', AuthRouter);
-  app.use('/hives', HivesRouter);
-  app.use('/logout', LogoutRouter);
+  // Define visits routes and use middleware to load current user
+  app.use(
+    '/visits',
+    async (req, res, next) => {
+      await userModel
+        .find([['token', '=', req.headers.authorization]])
+        .then((result) => {
+          req.currentUser = result[0];
+        });
+      next();
+    },
+    VisitsRouter
+  );
 };
 
 module.exports = {

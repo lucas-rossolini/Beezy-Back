@@ -1,5 +1,5 @@
+// response function that handle empty data or error on promise
 const Response = (promise, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', process.env.FRONT_URL);
   promise()
     .then((data) => {
       if (data) {
