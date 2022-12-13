@@ -1,9 +1,9 @@
-const Joi = require("joi")
+const Joi = require('joi');
 
 const schema = Joi.object({
-	required: Joi.string().max(255).required(),
-	optionnal: Joi.string().max(255),
-})
+  required: Joi.string().max(255).required(),
+  optionnal: Joi.string().max(255),
+});
 
 /*
 

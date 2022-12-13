@@ -1,17 +1,25 @@
-require("dotenv").config()
+require('dotenv').config();
 
-const express = require("express")
-const cors = require("cors")
+const express = require('express');
+const cors = require('cors');
 
-const app = express()
+const { setupApp } = require('./routes');
 
-app.use(express.json())
-app.use(cors())
+const app = express();
 
+// Use express to manage routing
+app.use(express.json());
+
+// Use Cross Origins Ressources Sharing to accept front requests
+app.use(cors());
+
+setupApp(app);
+const port = process.env.PORT || 5000;
+// start server
 app.listen(
-	process.env.EXPRESS_PORT,
-	console.log(`-------------------------------------\n
-   ➜ Loaded: http://localhost:${process.env.EXPRESS_PORT}
+  port,
+  console.log(`-------------------------------------\n
+  ➜ Loaded: http://localhost:${port}
 \n-------------------------------------
 `)
-)
+);
