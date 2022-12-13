@@ -14,12 +14,12 @@ app.use(express.json());
 app.use(cors());
 
 setupApp(app);
-
+const port = process.env.PORT || 5000;
 // start server
 app.listen(
-  process.env.EXPRESS_PORT,
+  port,
   console.log(`-------------------------------------\n
-  ➜ Loaded: http://localhost:${process.env.EXPRESS_PORT}
+  ➜ Loaded: http://localhost:${port}
 \n-------------------------------------
 `)
 );
